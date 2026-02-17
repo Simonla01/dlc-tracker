@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#070b14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="DLC QPL Efficiency Tracker - Competitive Intelligence for LED Lighting">
+<link rel="manifest" href="manifest.json">
+<title>DLC Efficiency Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --surface: #0d1321;
+  --surface2: #131a2e;
+  --border: #1a2540;
+  --border-accent: #1e40af44;
+  --text: #e2e8f0;
+  --text-muted: #64748b;
+  --text-dim: #475569;
+  --blue: #3b82f6;
+  --blue-glow: #60a5fa;
+  --cyan: #22d3ee;
+  --green: #10b981;
+  --green-bright: #4ade80;
+  --yellow: #fbbf24;
+  --red: #ef4444;
+  --purple: #a78bfa;
+  --pink: #f472b6;
+  --gold: #f59e0b;
+  --font-display: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  font-family: var(--font-display);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* TOP HEADER */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 80%, transparent 100%);
+  padding: 16px 16px 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.header-row {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.logo-mark {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 900; font-size: 13px;
+  color: #fff; letter-spacing: -0.5px;
+  box-shadow: 0 0 20px #3b82f644;
+}
+
+.logo-text {
+  flex: 1;
+}
+
+.logo-title {
+  font-size: 16px; font-weight: 900; letter-spacing: -0.5px;
+  background: linear-gradient(90deg, var(--blue-glow), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.logo-sub {
+  font-size: 10px; color: var(--text-muted);
+  font-family: var(--font-mono); letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex; gap: 8px;
+}
+
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.icon-btn:active { background: var(--surface2); transform: scale(0.95); }
+.icon-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 8px 8px calc(8px + var(--safe-bottom));
+  gap: 4px;
+}
+
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 8px 4px;
+  border-radius: 10px; border: none;
+  background: transparent; color: var(--text-dim);
+  font-family: var(--font-display); font-size: 10px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.nav-item.active { color: var(--blue-glow); background: #1e40af18; }
+.nav-item .nav-icon { font-size: 20px; line-height: 1; }
+.nav-item:active { transform: scale(0.95); }
+
+/* MAIN CONTENT */
+.main {
+  position: relative; z-index: 1;
+  padding: 0 16px 100px;
+  max-width: 600px; margin: 0 auto;
+}
+
+/* STAT CARDS */
+.stat-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  position: relative; overflow: hidden;
+}
+
+.stat-card::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 60px; height: 60px;
+  border-radius: 0 14px 0 60px;
+  opacity: 0.06;
+}
+
+.stat-card.blue::after { background: var(--blue); }
+.stat-card.cyan::after { background: var(--cyan); }
+.stat-card.green::after { background: var(--green); }
+.stat-card.purple::after { background: var(--purple); }
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 28px; font-weight: 900;
+  letter-spacing: -1.5px; line-height: 1;
+}
+
+.stat-value.blue { color: var(--blue-glow); }
+.stat-value.cyan { color: var(--cyan); }
+.stat-value.green { color: var(--green); }
+.stat-value.purple { color: var(--purple); }
+
+/* SECTION CARD */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.section.accent { border-color: var(--border-accent); }
+.section.warning { border-color: #eab30833; }
+
+.section-title {
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.section-title .emoji { font-size: 16px; }
+.section-title.blue { color: var(--blue-glow); }
+.section-title.cyan { color: var(--cyan); }
+.section-title.yellow { color: var(--yellow); }
+.section-title.green { color: var(--green); }
+
+/* PRODUCT ROW */
+.product-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #1a254022;
+}
+
+.product-row:last-child { border-bottom: none; }
+
+.product-rank {
+  width: 28px; font-size: 16px; text-align: center; flex-shrink: 0;
+}
+
+.product-info { flex: 1; min-width: 0; padding: 0 10px; }
+
+.product-mfr {
+  font-size: 13px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.product-mfr.highlight { color: var(--blue-glow); }
+
+.product-model {
+  font-size: 11px; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.product-efficacy {
+  text-align: right; flex-shrink: 0;
+}
+
+.product-efficacy-value {
+  font-size: 18px; font-weight: 900;
+  font-family: var(--font-mono);
+  letter-spacing: -1px;
+}
+
+.product-efficacy-unit {
+  font-size: 9px; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.eff-elite { color: var(--green); }
+.eff-high { color: var(--cyan); }
+.eff-mid { color: var(--yellow); }
+.eff-low { color: var(--red); }
+
+/* RANKING BAR */
+.rank-bar-bg {
+  height: 5px; border-radius: 3px;
+  background: var(--border); margin-top: 6px;
+  overflow: hidden;
+}
+
+.rank-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+/* CATEGORY CARD */
+.cat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.cat-card-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.cat-icon { font-size: 22px; margin-bottom: 4px; }
+.cat-name { font-size: 14px; font-weight: 800; }
+.cat-count { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.cat-leader { text-align: right; }
+.cat-leader-label { font-size: 8px; color: var(--text-muted); letter-spacing: 1px; font-family: var(--font-mono); }
+.cat-leader-val { font-size: 24px; font-weight: 900; color: var(--green); font-family: var(--font-mono); letter-spacing: -1px; }
+.cat-leader-unit { font-size: 9px; color: var(--text-muted); }
+
+.threshold-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  margin-top: 10px;
+}
+
+.threshold-box {
+  background: var(--surface);
+  border-radius: 8px; padding: 8px 10px;
+}
+
+.threshold-label {
+  font-size: 8px; color: var(--text-muted);
+  font-family: var(--font-mono); letter-spacing: 1px;
+}
+
+.threshold-val {
+  font-size: 12px; font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.threshold-val.std { color: var(--text); }
+.threshold-val.v6 { color: var(--yellow); }
+.threshold-val.prem { color: var(--purple); }
+.threshold-val.v6prem { color: var(--pink); }
+
+/* BADGE */
+.badge {
+  display: inline-block;
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 9px; font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+.badge-premium { background: #a78bfa22; color: var(--purple); }
+.badge-standard { background: #64748b22; color: var(--text-muted); }
+.badge-elite { background: #10b98122; color: var(--green); }
+.badge-good { background: #22d3ee22; color: var(--cyan); }
+.badge-fair { background: #eab30822; color: var(--yellow); }
+.badge-below { background: #ef444422; color: var(--red); }
+
+/* DETAIL TABLE */
+.detail-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #1a254022;
+  font-size: 13px;
+}
+
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--text-muted); font-size: 12px; }
+.detail-value { font-weight: 700; font-family: var(--font-mono); font-size: 13px; }
+
+/* COMPETITIVE POSITION CARD */
+.comp-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.comp-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+
+.comp-rank {
+  font-size: 26px; font-weight: 900;
+  font-family: var(--font-mono); letter-spacing: -1px;
+}
+
+.comp-rank.top3 { color: var(--green); }
+.comp-rank.top5 { color: var(--yellow); }
+.comp-rank.other { color: var(--red); }
+
+.comp-of { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.comp-stats {
+  display: flex; justify-content: space-between;
+  font-size: 11px; margin-top: 6px;
+}
+
+.comp-gap {
+  font-size: 10px; color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-align: right; margin-top: 4px;
+}
+
+/* FILTER CHIPS */
+.chip-row {
+  display: flex; gap: 6px; overflow-x: auto;
+  padding: 2px 0 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.chip-row::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.chip.active {
+  background: var(--blue); border-color: var(--blue);
+  color: #fff;
+}
+
+.chip:active { transform: scale(0.95); }
+
+/* SEARCH */
+.search-box {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 14px;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-box:focus { border-color: var(--blue); }
+.search-box::placeholder { color: var(--text-dim); }
+
+/* V6 ALERT */
+.alert-box {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+.alert-box strong { color: var(--yellow); }
+.alert-box .deadline { color: var(--red); font-weight: 700; }
+
+/* FAB */
+.fab {
+  position: fixed; bottom: calc(76px + var(--safe-bottom)); right: 16px;
+  z-index: 40;
+  width: 54px; height: 54px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  border: none;
+  color: #fff; font-size: 26px; font-weight: 300;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px #3b82f644;
+  transition: transform 0.2s;
+}
+
+.fab:active { transform: scale(0.9); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.2s;
+}
+
+.modal-sheet {
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px calc(24px + var(--safe-bottom));
+  width: 100%; max-width: 600px;
+  max-height: 85vh; overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.modal-title {
+  font-size: 18px; font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.form-group { margin-bottom: 14px; }
+
+.form-label {
+  display: block;
+  font-size: 10px; font-weight: 700;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 14px;
+  outline: none;
+}
+
+.form-input:focus { border-color: var(--blue); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.form-submit {
+  width: 100%;
+  padding: 14px;
+  border: none; border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.form-submit:active { opacity: 0.9; transform: scale(0.99); }
+
+/* CATEGORY HEADING */
+.cat-heading {
+  font-size: 15px; font-weight: 900;
+  letter-spacing: -0.3px;
+  padding: 16px 0 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+/* EMPTY STATE */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* SWIPE HINT */
+.swipe-delete {
+  font-size: 10px; color: var(--text-dim);
+  font-family: var(--font-mono);
+  padding: 4px 8px;
+  text-align: center;
+}
+
+/* INSTALL BANNER */
+.install-banner {
+  background: linear-gradient(135deg, #1e40af33, #06b6d433);
+  border: 1px solid var(--border-accent);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+
+.install-banner-text { flex: 1; font-size: 12px; color: var(--text); line-height: 1.5; }
+.install-banner-text strong { color: var(--blue-glow); }
+
+.install-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; flex-shrink: 0;
+}
+
+.dismiss-btn {
+  background: none; border: none;
+  color: var(--text-dim); font-size: 18px;
+  cursor: pointer; padding: 4px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* HIDE SCROLLBAR */
+.main::-webkit-scrollbar { display: none; }
+.main { scrollbar-width: none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ========================
+// DLC DATA
+// ========================
+const DLC_CATS = {
+  "Indoor Luminaires": {
+    "High Bay": { icon: "🏭", v51s: "110–130", v60s: "130–155", v51p: "135–155", v60p: "155–175" },
+    "Low Bay": { icon: "🔲", v51s: "105–125", v60s: "120–145", v51p: "125–145", v60p: "140–160" },
+    "Troffer": { icon: "⬜", v51s: "110–130", v60s: "125–150", v51p: "130–150", v60p: "145–165" },
+    "Linear Ambient": { icon: "━", v51s: "110–130", v60s: "125–150", v51p: "130–150", v60p: "145–165" },
+    "Downlight": { icon: "◉", v51s: "80–100", v60s: "95–115", v51p: "95–115", v60p: "110–130" },
+    "Refrigerated Case": { icon: "❄️", v51s: "80–100", v60s: "95–115", v51p: null, v60p: null },
+    "Stairwell/Utility": { icon: "🪜", v51s: "90–110", v60s: "105–125", v51p: null, v60p: null },
+  },
+  "Outdoor Luminaires": {
+    "Parking/Area": { icon: "🅿️", v51s: "100–120", v60s: "115–140", v51p: "120–140", v60p: "135–155" },
+    "Flood/Spot": { icon: "💡", v51s: "90–110", v60s: "105–130", v51p: "110–130", v60p: "125–145" },
+    "Wall Pack": { icon: "🧱", v51s: "90–110", v60s: "105–130", v51p: "110–130", v60p: "125–145" },
+    "Roadway/Street": { icon: "🛣️", v51s: "100–120", v60s: "115–140", v51p: "120–140", v60p: "135–155" },
+    "Canopy": { icon: "⛽", v51s: "100–120", v60s: "115–140", v51p: "120–140", v60p: "135–155" },
+  },
+  "Retrofit Kits": {
+    "Troffer Retrofit": { icon: "🔧", v51s: "110–130", v60s: "125–150", v51p: null, v60p: null },
+    "High Bay Retrofit": { icon: "⚙️", v51s: "110–130", v60s: "130–155", v51p: "135–155", v60p: "155–175" },
+    "Outdoor Retrofit": { icon: "🛠️", v51s: "95–115", v60s: "110–135", v51p: "115–135", v60p: "130–150" },
+  },
+  "Lamps": {
+    "Linear T8": { icon: "📏", v51s: "110–130", v60s: "125–145", v51p: null, v60p: null },
+    "Mogul E39/E40": { icon: "💡", v51s: "95–115", v60s: "110–130", v51p: null, v60p: null },
+  }
+};
+
+const SAMPLE = [
+  { id:1, mfr:"Cree Lighting", model:"KBL Series", cat:"Indoor Luminaires", sub:"High Bay", eff:195, lm:48750, w:250, cri:80, cct:5000, cls:"Premium", v:"5.1" },
+  { id:2, mfr:"Lithonia (Acuity)", model:"IBH Series", cat:"Indoor Luminaires", sub:"High Bay", eff:188, lm:37600, w:200, cri:80, cct:5000, cls:"Premium", v:"5.1" },
+  { id:3, mfr:"Philips (Signify)", model:"GreenPerform HB", cat:"Indoor Luminaires", sub:"High Bay", eff:190, lm:38000, w:200, cri:80, cct:4000, cls:"Premium", v:"5.1" },
+  { id:4, mfr:"Current (GE)", model:"ABR1 Series", cat:"Indoor Luminaires", sub:"High Bay", eff:185, lm:55500, w:300, cri:80, cct:5000, cls:"Premium", v:"5.1" },
+  { id:5, mfr:"RAB Lighting", model:"BAYLED", cat:"Indoor Luminaires", sub:"High Bay", eff:180, lm:27000, w:150, cri:80, cct:5000, cls:"Premium", v:"5.1" },
+  { id:6, mfr:"LSI Industries", model:"LSI-HB Series", cat:"Indoor Luminaires", sub:"High Bay", eff:175, lm:35000, w:200, cri:80, cct:5000, cls:"Standard", v:"5.1" },
+  { id:7, mfr:"Illumadyne", model:"ILMD-HB200", cat:"Indoor Luminaires", sub:"High Bay", eff:172, lm:34400, w:200, cri:80, cct:5000, cls:"Premium", v:"5.1" },
+  { id:8, mfr:"Lithonia (Acuity)", model:"2GTL4 Series", cat:"Indoor Luminaires", sub:"Troffer", eff:165, lm:6600, w:40, cri:80, cct:4000, cls:"Premium", v:"5.1" },
+  { id:9, mfr:"Metalux (Acuity)", model:"Cruze ST", cat:"Indoor Luminaires", sub:"Troffer", eff:160, lm:4800, w:30, cri:80, cct:4000, cls:"Premium", v:"5.1" },
+  { id:10, mfr:"Cree Lighting", model:"ZR Series", cat:"Indoor Luminaires", sub:"Troffer", eff:158, lm:4740, w:30, cri:90, cct:3500, cls:"Premium", v:"5.1" },
+  { id:11, mfr:"Illumadyne", model:"ILMD-TF24", cat:"Indoor Luminaires", sub:"Troffer", eff:148, lm:5920, w:40, cri:80, cct:4000, cls:"Standard", v:"5.1" },
+  { id:12, mfr:"Lithonia (Acuity)", model:"LSXR Series", cat:"Indoor Luminaires", sub:"Linear Ambient", eff:162, lm:8100, w:50, cri:80, cct:4000, cls:"Premium", v:"5.1" },
+  { id:13, mfr:"Illumadyne", model:"ILMD-LA48", cat:"Indoor Luminaires", sub:"Linear Ambient", eff:155, lm:7750, w:50, cri:80, cct:4000, cls:"Standard", v:"5.1" },
+  { id:14, mfr:"Cree Lighting", model:"RSW Series", cat:"Outdoor Luminaires", sub:"Parking/Area", eff:170, lm:34000, w:200, cri:70, cct:5000, cls:"Premium", v:"5.1" },
+  { id:15, mfr:"Eaton (Cooper)", model:"Verdeon", cat:"Outdoor Luminaires", sub:"Parking/Area", eff:165, lm:24750, w:150, cri:70, cct:4000, cls:"Premium", v:"5.1" },
+  { id:16, mfr:"Cree Lighting", model:"CPY500", cat:"Outdoor Luminaires", sub:"Canopy", eff:160, lm:12800, w:80, cri:70, cct:5000, cls:"Premium", v:"5.1" },
+  { id:17, mfr:"RAB Lighting", model:"ALED5T150", cat:"Outdoor Luminaires", sub:"Flood/Spot", eff:155, lm:23250, w:150, cri:70, cct:5000, cls:"Premium", v:"5.1" },
+  { id:18, mfr:"Hubbell", model:"Outdoor NRG", cat:"Outdoor Luminaires", sub:"Roadway/Street", eff:158, lm:23700, w:150, cri:70, cct:4000, cls:"Premium", v:"5.1" },
+  { id:19, mfr:"Current (GE)", model:"Albeo ABV1", cat:"Indoor Luminaires", sub:"Low Bay", eff:165, lm:16500, w:100, cri:80, cct:5000, cls:"Premium", v:"5.1" },
+  { id:20, mfr:"Eaton (Metalux)", model:"Encounter LED", cat:"Indoor Luminaires", sub:"Refrigerated Case", eff:130, lm:3900, w:30, cri:80, cct:4000, cls:"Standard", v:"5.1" },
+];
+
+// ========================
+// APP STATE
+// ========================
+let state = {
+  view: 'dashboard',
+  products: [...SAMPLE],
+  search: '',
+  filterCat: null,
+  filterSub: null,
+  filterCls: 'all',
+  showAdd: false,
+  showImport: false,
+  showFab: false,
+  showInstall: true,
+  sortBy: 'eff',
+  sortDir: 'desc',
+};
+
+// Load from storage
+async function loadData() {
+  try {
+    const r = await window.storage.get('dlc-pwa-data');
+    if (r && r.value) {
+      const d = JSON.parse(r.value);
+      if (d.length > 0) state.products = d;
+    }
+  } catch(e) {}
+  render();
+}
+
+async function saveData() {
+  try { await window.storage.set('dlc-pwa-data', JSON.stringify(state.products)); } catch(e) {}
+}
+
+// ========================
+// HELPERS
+// ========================
+function effClass(eff) {
+  if (eff >= 180) return 'eff-elite';
+  if (eff >= 150) return 'eff-high';
+  if (eff >= 120) return 'eff-mid';
+  return 'eff-low';
+}
+
+function getTopsBySub() {
+  const g = {};
+  state.products.forEach(p => {
+    const k = p.sub;
+    if (!g[k]) g[k] = [];
+    g[k].push(p);
+  });
+  const t = {};
+  Object.entries(g).forEach(([k, ps]) => {
+    t[k] = ps.sort((a,b) => b.eff - a.eff).slice(0,5);
+  });
+  return t;
+}
+
+function getIllumadyneRanks() {
+  const g = {};
+  state.products.forEach(p => {
+    if (!g[p.sub]) g[p.sub] = [];
+    g[p.sub].push(p);
+  });
+  const r = [];
+  Object.entries(g).forEach(([sub, ps]) => {
+    ps.sort((a,b) => b.eff - a.eff);
+    ps.forEach((p, i) => {
+      if (p.mfr === 'Illumadyne') {
+        r.push({ ...p, rank: i+1, total: ps.length, topEff: ps[0].eff });
+      }
+    });
+  });
+  return r;
+}
+
+function getFiltered() {
+  return state.products.filter(p => {
+    if (state.filterCat && p.cat !== state.filterCat) return false;
+    if (state.filterSub && p.sub !== state.filterSub) return false;
+    if (state.filterCls !== 'all' && p.cls.toLowerCase() !== state.filterCls) return false;
+    if (state.search && !(p.mfr + ' ' + p.model).toLowerCase().includes(state.search.toLowerCase())) return false;
+    return true;
+  }).sort((a,b) => {
+    const m = state.sortDir === 'desc' ? -1 : 1;
+    return m * (a[state.sortBy] - b[state.sortBy]);
+  });
+}
+
+// ========================
+// RENDER
+// ========================
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    ${renderHeader()}
+    <div class="main">
+      ${state.view === 'dashboard' ? renderDashboard() : ''}
+      ${state.view === 'products' ? renderProducts() : ''}
+      ${state.view === 'categories' ? renderCategories() : ''}
+      ${state.view === 'report' ? renderReport() : ''}
+    </div>
+    ${renderBottomNav()}
+    ${state.view !== 'categories' ? renderFab() : ''}
+    ${state.showAdd ? renderAddModal() : ''}
+    ${state.showImport ? renderImportModal() : ''}
+  `;
+}
+
+function renderHeader() {
+  return `
+    <div class="header">
+      <div class="header-row">
+        <div class="logo-mark">DLC</div>
+        <div class="logo-text">
+          <div class="logo-title">QPL Efficiency Tracker</div>
+          <div class="logo-sub">Illumadyne Intelligence</div>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="resetData()" title="Reset">↻</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderBottomNav() {
+  const tabs = [
+    ['dashboard', '📊', 'Dashboard'],
+    ['products', '📋', 'Products'],
+    ['categories', '🏷️', 'Categories'],
+    ['report', '📄', 'Report'],
+  ];
+  return `
+    <nav class="bottom-nav">
+      ${tabs.map(([v,ico,label]) => `
+        <button class="nav-item ${state.view===v?'active':''}" onclick="state.view='${v}';render()">
+          <span class="nav-icon">${ico}</span>${label}
+        </button>`).join('')}
+    </nav>`;
+}
+
+function renderDashboard() {
+  const total = state.products.length;
+  const avg = total ? Math.round(state.products.reduce((s,p) => s+p.eff, 0) / total) : 0;
+  const top = total ? Math.max(...state.products.map(p => p.eff)) : 0;
+  const prem = state.products.filter(p => p.cls==='Premium').length;
+  const ranks = getIllumadyneRanks();
+  const tops = getTopsBySub();
+
+  return `
+    <div class="stat-grid">
+      <div class="stat-card blue"><div class="stat-label">Products</div><div class="stat-value blue">${total}</div></div>
+      <div class="stat-card cyan"><div class="stat-label">Avg lm/W</div><div class="stat-value cyan">${avg}</div></div>
+      <div class="stat-card green"><div class="stat-label">Top lm/W</div><div class="stat-value green">${top}</div></div>
+      <div class="stat-card purple"><div class="stat-label">Premium</div><div class="stat-value purple">${prem}</div></div>
+    </div>
+
+    ${ranks.length > 0 ? `
+    <div class="section accent">
+      <div class="section-title blue"><span class="emoji">🏢</span> Illumadyne Position</div>
+      ${ranks.map(r => `
+        <div class="comp-card">
+          <div class="comp-header">
+            <div>
+              <div class="product-mfr highlight">${r.model}</div>
+              <div class="product-model">${r.sub}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="comp-rank ${r.rank<=3?'top3':r.rank<=5?'top5':'other'}">#${r.rank}</div>
+              <div class="comp-of">of ${r.total}</div>
+            </div>
+          </div>
+          <div class="comp-stats">
+            <span style="color:var(--text-muted)">You: <strong style="color:var(--text)">${r.eff} lm/W</strong></span>
+            <span style="color:var(--text-muted)">Leader: <strong style="color:var(--green)">${r.topEff} lm/W</strong></span>
+          </div>
+          <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${r.eff/r.topEff*100}%;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div></div>
+          <div class="comp-gap">Gap: ${r.topEff - r.eff} lm/W (${((1 - r.eff/r.topEff)*100).toFixed(1)}%)</div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <div class="section">
+      <div class="section-title cyan"><span class="emoji">🏆</span> Top by Category</div>
+      ${Object.entries(tops).slice(0,6).map(([sub, ps]) => `
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">${sub}</div>
+          ${ps.slice(0,3).map((p,i) => `
+            <div class="product-row">
+              <div class="product-rank">${i===0?'🥇':i===1?'🥈':'🥉'}</div>
+              <div class="product-info">
+                <div class="product-mfr ${p.mfr==='Illumadyne'?'highlight':''}">${p.mfr}</div>
+                <div class="product-model">${p.model}</div>
+              </div>
+              <div class="product-efficacy">
+                <div class="product-efficacy-value ${effClass(p.eff)}">${p.eff}</div>
+                <div class="product-efficacy-unit">lm/W</div>
+              </div>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>
+
+    <div class="section warning">
+      <div class="section-title yellow"><span class="emoji">⚠️</span> V6.0 Transition</div>
+      <div class="alert-box">
+        V6.0 applications opened <strong>Jan 5, 2026</strong>. Products not updated delist <span class="deadline">Dec 15, 2026</span>.
+        Average efficacy increase: <strong>14%</strong> across all categories.
+      </div>
+    </div>`;
+}
+
+function renderProducts() {
+  const filtered = getFiltered();
+  const cats = [...new Set(state.products.map(p => p.cat))];
+  const subs = state.filterCat ? [...new Set(state.products.filter(p=>p.cat===state.filterCat).map(p=>p.sub))] : [];
+
+  return `
+    <input class="search-box" placeholder="Search manufacturer or model..."
+      value="${state.search}" oninput="state.search=this.value;render()">
+
+    <div class="chip-row">
+      <button class="chip ${!state.filterCat?'active':''}" onclick="state.filterCat=null;state.filterSub=null;render()">All</button>
+      ${cats.map(c => `<button class="chip ${state.filterCat===c?'active':''}" onclick="state.filterCat='${c}';state.filterSub=null;render()">${c.replace(' Luminaires','')}</button>`).join('')}
+    </div>
+
+    ${subs.length ? `<div class="chip-row">
+      <button class="chip ${!state.filterSub?'active':''}" onclick="state.filterSub=null;render()">All</button>
+      ${subs.map(s => `<button class="chip ${state.filterSub===s?'active':''}" onclick="state.filterSub='${s}';render()">${s}</button>`).join('')}
+    </div>` : ''}
+
+    <div class="chip-row">
+      ${['all','premium','standard'].map(c => `<button class="chip ${state.filterCls===c?'active':''}" onclick="state.filterCls='${c}';render()">${c==='all'?'All Classes':c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('')}
+    </div>
+
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;font-family:var(--font-mono)">
+      ${filtered.length} products · sorted by efficacy
+    </div>
+
+    ${filtered.length === 0 ? '<div class="empty">No products match filters</div>' : ''}
+
+    ${filtered.map(p => `
+      <div class="product-row" style="padding:12px 0">
+        <div class="product-info" style="padding:0 0 0 0">
+          <div class="product-mfr ${p.mfr==='Illumadyne'?'highlight':''}">${p.mfr}</div>
+          <div class="product-model">${p.model} · ${p.sub} · ${p.cct}K · CRI ${p.cri}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="product-efficacy">
+            <div class="product-efficacy-value ${effClass(p.eff)}">${p.eff}</div>
+            <div class="product-efficacy-unit">lm/W</div>
+          </div>
+          <span class="badge ${p.cls==='Premium'?'badge-premium':'badge-standard'}">${p.cls}</span>
+          <button onclick="deleteProduct(${p.id})" style="background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:4px">✕</button>
+        </div>
+      </div>`).join('')}
+  `;
+}
+
+function renderCategories() {
+  return Object.entries(DLC_CATS).map(([catName, subs]) => `
+    <div class="cat-heading">${catName}</div>
+    ${Object.entries(subs).map(([subName, d]) => {
+      const ps = state.products.filter(p => p.sub === subName).sort((a,b) => b.eff - a.eff);
+      const leader = ps[0];
+      return `
+        <div class="cat-card">
+          <div class="cat-card-header">
+            <div>
+              <div class="cat-icon">${d.icon}</div>
+              <div class="cat-name">${subName}</div>
+              <div class="cat-count">${ps.length} tracked</div>
+            </div>
+            ${leader ? `<div class="cat-leader">
+              <div class="cat-leader-label">LEADER</div>
+              <div class="cat-leader-val">${leader.eff}</div>
+              <div class="cat-leader-unit">lm/W</div>
+            </div>` : ''}
+          </div>
+          <div class="threshold-grid">
+            <div class="threshold-box"><div class="threshold-label">V5.1 STD</div><div class="threshold-val std">${d.v51s}</div></div>
+            <div class="threshold-box"><div class="threshold-label">V6.0 STD</div><div class="threshold-val v6">${d.v60s}</div></div>
+            ${d.v51p ? `<div class="threshold-box"><div class="threshold-label">V5.1 PREM</div><div class="threshold-val prem">${d.v51p}</div></div>` : ''}
+            ${d.v60p ? `<div class="threshold-box"><div class="threshold-label">V6.0 PREM</div><div class="threshold-val v6prem">${d.v60p}</div></div>` : ''}
+          </div>
+          ${ps.slice(0,3).map((p,i) => `
+            <div class="product-row" ${i===0?'style="margin-top:8px;border-top:1px solid var(--border);padding-top:10px"':''}>
+              <div class="product-info" style="padding-left:0">
+                <div class="product-mfr ${p.mfr==='Illumadyne'?'highlight':''}" style="font-size:12px">${i+1}. ${p.mfr}</div>
+                <div class="product-model">${p.model}</div>
+              </div>
+              <div class="product-efficacy">
+                <div class="product-efficacy-value ${effClass(p.eff)}" style="font-size:16px">${p.eff}</div>
+                <div class="product-efficacy-unit">lm/W</div>
+              </div>
+            </div>`).join('')}
+        </div>`;
+    }).join('')}
+  `).join('');
+}
+
+function renderReport() {
+  const tops = getTopsBySub();
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  return `
+    <div class="section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="section-title green" style="margin-bottom:0"><span class="emoji">📊</span> Efficiency Report</div>
+        <span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">${date}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        Highest-efficiency LED fixtures by DLC category. Data from DLC QPL and manual entries. Thresholds reflect V5.1 (current) and V6.0 (Jan 2026).
+      </div>
+    </div>
+
+    ${Object.entries(tops).map(([sub, ps]) => `
+      <div class="section" style="padding:14px">
+        <div style="font-size:14px;font-weight:800;margin-bottom:10px">${sub}</div>
+        ${ps.map((p,i) => `
+          <div class="product-row">
+            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+              <span style="font-size:14px;width:24px;text-align:center;flex-shrink:0">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span>
+              <div style="min-width:0">
+                <div class="product-mfr ${p.mfr==='Illumadyne'?'highlight':''}" style="font-size:12px">${p.mfr}</div>
+                <div class="product-model">${p.model} · ${p.lm.toLocaleString()} lm · ${p.w}W · CRI ${p.cri}</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div class="product-efficacy">
+                <div class="product-efficacy-value ${effClass(p.eff)}" style="font-size:16px">${p.eff}</div>
+                <div class="product-efficacy-unit">lm/W</div>
+              </div>
+              <span class="badge ${p.cls==='Premium'?'badge-premium':'badge-standard'}">${p.cls}</span>
+            </div>
+          </div>`).join('')}
+      </div>`).join('')}
+
+    <div class="section accent">
+      <div class="section-title blue" style="font-size:12px"><span class="emoji">📱</span> Keeping Data Current</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.7">
+        <p style="margin-bottom:6px"><strong style="color:var(--text)">CSV Import:</strong> Download from MyDLC QPL search, upload via + button.</p>
+        <p style="margin-bottom:6px"><strong style="color:var(--text)">DLC API:</strong> Contact info@designlights.org for automated access pricing.</p>
+        <p style="margin-bottom:6px"><strong style="color:var(--text)">Manual:</strong> Add products via + button as you spot competitors.</p>
+        <p><strong style="color:var(--text)">Share:</strong> This PWA URL works on any device — share with clients, partners, or buyers.</p>
+      </div>
+    </div>`;
+}
+
+function renderAddModal() {
+  const cats = Object.keys(DLC_CATS);
+  const firstCat = cats[0];
+  const subs = Object.keys(DLC_CATS[firstCat]);
+
+  return `
+    <div class="modal-overlay" onclick="state.showAdd=false;state.showFab=false;render()">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Add Product</div>
+        <form onsubmit="handleAdd(event)">
+          <div class="form-group">
+            <label class="form-label">Manufacturer</label>
+            <input class="form-input" id="f-mfr" placeholder="e.g. Cree Lighting" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Model</label>
+            <input class="form-input" id="f-model" placeholder="e.g. KBL-24L-50K" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-input" id="f-cat" onchange="updateSubOptions()">
+                ${cats.map(c => `<option value="${c}">${c}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subcategory</label>
+              <select class="form-input" id="f-sub">
+                ${subs.map(s => `<option value="${s}">${s}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">Efficacy</label>
+              <input class="form-input" id="f-eff" type="number" placeholder="lm/W" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lumens</label>
+              <input class="form-input" id="f-lm" type="number" placeholder="lm">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Watts</label>
+              <input class="form-input" id="f-w" type="number" placeholder="W">
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">CRI</label>
+              <input class="form-input" id="f-cri" type="number" value="80">
+            </div>
+            <div class="form-group">
+              <label class="form-label">CCT (K)</label>
+              <input class="form-input" id="f-cct" type="number" value="4000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Class</label>
+              <select class="form-input" id="f-cls">
+                <option>Standard</option>
+                <option>Premium</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="form-submit">Add Product</button>
+        </form>
+      </div>
+    </div>`;
+}
+
+function renderFab() {
+  if (state.showFab) {
+    return `
+      <div style="position:fixed;inset:0;z-index:35" onclick="state.showFab=false;render()"></div>
+      <div style="position:fixed;bottom:calc(140px + var(--safe-bottom));right:16px;z-index:40;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+        <button onclick="state.showImport=true;state.showFab=false;render()" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font-display);font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+          📄 Import CSV
+        </button>
+        <button onclick="state.showAdd=true;state.showFab=false;render()" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font-display);font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+          ✏️ Add Product
+        </button>
+      </div>
+      <button class="fab" onclick="state.showFab=false;render()" style="transform:rotate(45deg)">+</button>`;
+  }
+  return `<button class="fab" onclick="state.showFab=true;render()">+</button>`;
+}
+
+function renderImportModal() {
+  return `
+    <div class="modal-overlay" onclick="state.showImport=false;render()">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Import DLC CSV</div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:16px">
+          Upload a CSV exported from the <strong style="color:var(--text)">DLC QPL search</strong> at qpl.designlights.org. The parser recognizes standard DLC column headers automatically.
+        </div>
+        <div style="border:2px dashed var(--border);border-radius:14px;padding:30px 20px;text-align:center;margin-bottom:16px;cursor:pointer" onclick="document.getElementById('csv-file').click()">
+          <div style="font-size:32px;margin-bottom:8px">📄</div>
+          <div style="font-size:13px;color:var(--text-muted)">Tap to select CSV file</div>
+          <input type="file" id="csv-file" accept=".csv,.tsv,.txt" style="display:none" onchange="handleCSV(this)">
+        </div>
+        <div id="csv-status" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);min-height:20px"></div>
+      </div>
+    </div>`;
+}
+
+// ========================
+// ACTIONS
+// ========================
+function updateSubOptions() {
+  const cat = document.getElementById('f-cat').value;
+  const subSel = document.getElementById('f-sub');
+  const subs = Object.keys(DLC_CATS[cat] || {});
+  subSel.innerHTML = subs.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+function handleAdd(e) {
+  e.preventDefault();
+  const p = {
+    id: Date.now(),
+    mfr: document.getElementById('f-mfr').value,
+    model: document.getElementById('f-model').value,
+    cat: document.getElementById('f-cat').value,
+    sub: document.getElementById('f-sub').value,
+    eff: parseFloat(document.getElementById('f-eff').value),
+    lm: parseFloat(document.getElementById('f-lm').value) || 0,
+    w: parseFloat(document.getElementById('f-w').value) || 0,
+    cri: parseFloat(document.getElementById('f-cri').value) || 80,
+    cct: parseFloat(document.getElementById('f-cct').value) || 4000,
+    cls: document.getElementById('f-cls').value,
+    v: '5.1'
+  };
+  state.products.push(p);
+  state.showAdd = false;
+  saveData();
+  render();
+}
+
+function deleteProduct(id) {
+  state.products = state.products.filter(p => p.id !== id);
+  saveData();
+  render();
+}
+
+function handleCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('csv-status');
+  statusEl.textContent = 'Parsing...';
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 2) { statusEl.textContent = 'Error: file appears empty'; return; }
+      
+      // Parse header
+      const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().trim());
+      
+      // Map column indices
+      const colMap = {};
+      const mappings = {
+        mfr: ['manufacturer', 'brand', 'mfr', 'company', 'manufacturer name'],
+        model: ['model', 'model number', 'model_number', 'product', 'product name'],
+        cat: ['category', 'product category', 'primary use'],
+        sub: ['subcategory', 'sub-category', 'sub category', 'product type'],
+        eff: ['efficacy', 'tested efficacy', 'luminaire efficacy', 'efficacy (lm/w)', 'lm/w'],
+        lm: ['lumens', 'tested light output', 'light output', 'total lumens', 'initial lumens'],
+        w: ['watts', 'input power', 'input watts', 'wattage', 'power'],
+        cri: ['cri', 'color rendering index', 'color rendering'],
+        cct: ['cct', 'correlated color temperature', 'color temperature', 'cct (k)'],
+        cls: ['classification', 'dlc classification', 'dlc class', 'tier', 'qualification level']
+      };
+      
+      headers.forEach((h, i) => {
+        Object.entries(mappings).forEach(([key, aliases]) => {
+          if (aliases.some(a => h.includes(a))) colMap[key] = i;
+        });
+      });
+      
+      if (colMap.eff === undefined) { statusEl.textContent = 'Error: no efficacy column found'; return; }
+      
+      let imported = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const vals = parseCSVLine(lines[i]);
+        const eff = parseFloat(vals[colMap.eff]);
+        if (isNaN(eff) || eff <= 0) continue;
+        
+        const p = {
+          id: Date.now() + i,
+          mfr: vals[colMap.mfr] || 'Unknown',
+          model: vals[colMap.model] || 'Unknown',
+          cat: matchCat(vals[colMap.cat] || ''),
+          sub: matchSub(vals[colMap.sub] || ''),
+          eff: eff,
+          lm: parseFloat(vals[colMap.lm]) || Math.round(eff * (parseFloat(vals[colMap.w]) || 100)),
+          w: parseFloat(vals[colMap.w]) || Math.round((parseFloat(vals[colMap.lm]) || 10000) / eff),
+          cri: parseFloat(vals[colMap.cri]) || 80,
+          cct: parseFloat(vals[colMap.cct]) || 4000,
+          cls: (vals[colMap.cls] || '').toLowerCase().includes('prem') ? 'Premium' : 'Standard',
+          v: '5.1'
+        };
+        state.products.push(p);
+        imported++;
+      }
+      
+      saveData();
+      statusEl.innerHTML = `<span style="color:var(--green)">✓ Imported ${imported} products</span>`;
+      setTimeout(() => { state.showImport = false; render(); }, 1200);
+    } catch(err) {
+      statusEl.textContent = 'Error: ' + err.message;
+    }
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuotes) {
+      if (c === '"' && line[i+1] === '"') { current += '"'; i++; }
+      else if (c === '"') { inQuotes = false; }
+      else { current += c; }
+    } else {
+      if (c === '"') { inQuotes = true; }
+      else if (c === ',' || c === '\t') { result.push(current.trim()); current = ''; }
+      else { current += c; }
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function matchCat(raw) {
+  const r = raw.toLowerCase();
+  if (r.includes('indoor')) return 'Indoor Luminaires';
+  if (r.includes('outdoor')) return 'Outdoor Luminaires';
+  if (r.includes('retrofit')) return 'Retrofit Kits';
+  if (r.includes('lamp') || r.includes('replacement')) return 'Lamps';
+  return 'Indoor Luminaires';
+}
+
+function matchSub(raw) {
+  const r = raw.toLowerCase();
+  const map = {
+    'high bay': 'High Bay', 'low bay': 'Low Bay', 'troffer': 'Troffer',
+    'linear': 'Linear Ambient', 'downlight': 'Downlight', 'refrigerat': 'Refrigerated Case',
+    'stairwell': 'Stairwell/Utility', 'parking': 'Parking/Area', 'area': 'Parking/Area',
+    'flood': 'Flood/Spot', 'spot': 'Flood/Spot', 'wall pack': 'Wall Pack',
+    'roadway': 'Roadway/Street', 'street': 'Roadway/Street', 'canopy': 'Canopy',
+  };
+  for (const [k, v] of Object.entries(map)) {
+    if (r.includes(k)) return v;
+  }
+  return raw || 'High Bay';
+}
+
+function resetData() {
+  if (confirm('Reset to sample data?')) {
+    state.products = [...SAMPLE];
+    saveData();
+    render();
+  }
+}
+
+// ========================
+// INIT
+// ========================
+loadData();
+
+// Register service worker for offline
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
